@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Game in QRcode</title>
+
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                outline: none;
+            }
+            #mainCanvas {
+                background-color: lightslategray;
+                width: 300px;
+                height: 500px;
+            }
+            body {
+                width: 100vw;
+                height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="mainCanvas"></canvas>
+        <script>
+let canvas = document.getElementById('mainCanvas'),
+    ctx =  canvas.getContext('2d'),
+    width = canvas.width = canvas.clientWidth,
+    height = canvas.height = canvas.clientHeight,
+    x = width / 2,
+    mouseX = x,
+    inClick = 0,
+    enemies = [],
+    tick = 0;
+
+const chunks = [
+    [50, 150, 250],
+    [40, 60, 80, 220, 240, 260],
+    [60, 90, 210, 240],
+    [90, 115, 185, 210],
+    [130, 150, 170],
+    [15, 150, 285],
+    [15, 35, 140, 160, 265, 285]
+];
+
+window.onmousedown = () => {inClick = 1};
+window.onmouseup = () => {inClick = 0};
+window.onmousemove = (event) => {mouseX = event.x - canvas.offsetLeft};
+
+function loop() {
+    //logic
+    if (tick % 50 == 0) {
+        let ch = chunks[Math.round(Math.random() * (chunks.length - 1))];
+        for (let e of ch) {
+            enemies.push({x: e, y: -10});
+        }
+    }
+
+    if (inClick) {
+        if (mouseX < x && x - 12 > 0) x -= 3;
+        if (mouseX > x && x + 12 < width) x += 3;
+    }
+
+    for (let index = enemies.length - 1; index >= 0; index--) {
+        let enemy = enemies[index];
+        enemy.y++;
+
+        if (Math.sqrt(Math.pow(x - enemy.x, 2) + Math.pow(400 - enemy.y, 2)) < 20) {
+            alert('Game over!');
+            x = width / 2;
+            enemies = [];
+            isClick = 0;
+            tick = 0;
+            break;
+        }
+
+        if (enemy.y - 8 > height) {
+            enemies.splice(index, 1);
+        }
+    } 
+
+    // draw
+    ctx.fillStyle = '#3a484f';
+    ctx.rect(0, 0, width, height);
+    ctx.fill();
+
+    ctx.lineWidth = '2';
+    ctx.fillStyle = ctx.strokeStyle = '#c4aef5';
+    ctx.beginPath();
+    ctx.arc(x, 400, 8, 0, 6.18);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(x, 400, 12, 0, 6.18);
+    ctx.closePath();
+    ctx.stroke();
+
+    ctx.fillStyle = ctx.strokeStyle = '#ff5330';
+    for (let enemy of enemies) {
+        ctx.beginPath();
+        ctx.rect(enemy.x - 4, enemy.y - 4, 8, 8);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.rect(enemy.x - 8, enemy.y - 8, 16, 16);
+        ctx.stroke();
+    }
+
+    tick++;
+    window.requestAnimationFrame(loop);
+}
+
+loop();
+        </script>
+    </body>
+</html>
