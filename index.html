@@ -30,10 +30,10 @@
         <script>
 let canvas = document.getElementById('mainCanvas'),
     ctx =  canvas.getContext('2d'),
-    width = canvas.width = canvas.clientWidth,
-    height = canvas.height = canvas.clientHeight,
+    width = canvas.width = 300,
+    height = canvas.height = 500,
     x = width / 2,
-    mouseX = x,
+    mouseX = 0,
     inClick = 0,
     enemies = [],
     tick = 0;
@@ -50,6 +50,9 @@ const chunks = [
 
 window.onmousedown = () => {inClick = 1};
 window.onmouseup = () => {inClick = 0};
+window.ontouchstart = (event) => {inClick = 1;mouseX = event.touches[0].clientX - canvas.offsetLeft};
+window.ontouchend = (event) => {inClick = 0;if(inClick)mouseX = event.touches[0].clientX - canvas.offsetLeft};
+window.ontouchmove = (event) => {mouseX = event.touches[0].clientX - canvas.offsetLeft};
 window.onmousemove = (event) => {mouseX = event.x - canvas.offsetLeft};
 
 function loop() {
